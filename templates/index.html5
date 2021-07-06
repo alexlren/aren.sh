@@ -1,0 +1,16 @@
+${header()}
+<h1>$title$</h1>
+<ul class="index">
+$for(list)$
+<li>
+    <a href="$it.url$">$it.title$</a>
+    <p class="metadata">
+        <span class="date">$it.date$</span> -
+        $for(list.tags)$
+            <a href="/tag/$it$.html">#$it$</a>
+        $endfor$
+    </p>
+</li>
+$endfor$
+</ul>
+${footer()}

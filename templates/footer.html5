@@ -1,0 +1,10 @@
+$for(include-after)$
+$include-after$
+$endfor$
+</div>
+<footer class="row footer">
+    $site_name$ | <a href="/feed.xml">rss <img class="rss" src="/img/rss.png"></a> | <a href="$github_url$">Github</a>
+</footer>
+</div>
+</body>
+</html>

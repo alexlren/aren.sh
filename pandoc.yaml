@@ -1,0 +1,53 @@
+from: markdown+emoji
+to: html5
+
+output-file:
+input-files:
+
+template:
+standalone: true
+self-contained: false
+
+metadata:
+metadata-files: ['./metadata.yaml']
+
+# Note that these take files, not their contents:
+include-before-body: []
+include-after-body: []
+include-in-header: []
+resource-path: ["."]
+
+
+data-dir: .
+
+extract-media: mediadir
+
+table-of-contents: false
+title-prefix: "aren.sh"
+strip-empty-paragraphs: true
+# lf, crlf, or native
+eol: lf
+strip-comments: false
+indented-code-classes: []
+ascii: true
+default-image-extension: ".jpg"
+
+# either a style name of a style definition file:
+highlight-style: espresso
+html-math-method:
+  method: mathjax
+  url: "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
+
+tab-stop: 8
+preserve-tabs: true
+
+css:
+- /css/style.css
+
+request-headers:
+- ["User-Agent", "Mozilla/5.0"]
+
+fail-if-warnings: true
+dump-args: false
+ignore-args: false
+trace: false

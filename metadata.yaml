@@ -1,0 +1,19 @@
+lang: en
+site_name: aren.sh
+site_url: https://aren.sh
+site_description: My kids will speak C before they speak English
+github_url: https://github.com/alexlren
+author: Alex Ren
+tags:
+  - crypto
+  - cryptography
+  - algorithm
+  - python
+  - c
+  - rust
+  - programming
+  - science
+  - movies
+  - math
+  - hacks
+title-prefix: aren.sh
