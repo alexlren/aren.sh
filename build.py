@@ -94,7 +94,7 @@ def build_index(dirname, name, posts, catmenu):
 if __name__ == '__main__':
     categories = os.listdir(SRCDIR)
 
-    catmenu = ' '.join((f'--metadata="categories:{catname}"' for catname in categories))
+    catmenu = ' '.join(sorted((f'--metadata="categories:{catname}"' for catname in categories)))
     # copy public files
     print(f'Copy public files -> {BUILDDIR}')
     shutil.copytree(PUBLICDIR, BUILDDIR, dirs_exist_ok=True)
