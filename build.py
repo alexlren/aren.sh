@@ -1,6 +1,6 @@
 #! /usr/bin/env python3
 
-import datetime, json, os, shutil, subprocess, tempfile
+import datetime, json, os, shutil, subprocess
 
 
 SRC_DIRNAME = 'posts'
