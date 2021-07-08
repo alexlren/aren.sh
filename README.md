@@ -1,4 +1,4 @@
-# aren.sh
+# shaoner.com
 
 Just a simple blog
 

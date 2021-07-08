@@ -23,7 +23,7 @@ data-dir: .
 extract-media: mediadir
 
 table-of-contents: false
-title-prefix: "aren.sh"
+# title-prefix: "shaoner.com"
 strip-empty-paragraphs: true
 # lf, crlf, or native
 eol: lf
