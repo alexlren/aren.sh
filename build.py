@@ -31,8 +31,7 @@ def build_rss_feed(posts):
   <pubDate>{pub_date}</pubDate>
 </item>
 """
-    feed_tmpl = """
-<?xml version="1.0" encoding="UTF-8" ?>
+    feed_tmpl = """<?xml version="1.0" encoding="UTF-8" ?>
 <rss version="2.0">
 <channel>
   <title>{site_name}</title>
