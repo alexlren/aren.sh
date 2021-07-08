@@ -3,7 +3,7 @@ $include-after$
 $endfor$
 </div>
 <footer class="row footer">
-    $site_name$ | <a href="/feed.xml">rss <img class="rss" src="/img/rss.png"></a> | <a href="https://github.com/$github_username$"><img class="github-logo" alt="Github logo" src="/img/github.png"/></a>
+    $site_name$ | <a href="/feed.xml"><img class="rss" alt="Rss logo" src="/img/rss.png"></a> | <a href="https://github.com/$github_username$"><img class="github-logo" alt="Github logo" src="/img/github.png"/></a>
 </footer>
 </div>
 </body>
