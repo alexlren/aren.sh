@@ -39,6 +39,7 @@ $endif$
 $for(header-includes)$
   $header-includes$
 $endfor$
+  <script src="/js/main.js" async></script>
 </head>
 <body>
   <div class="box">
