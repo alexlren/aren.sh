@@ -88,7 +88,7 @@ def build_index(dirname, name, posts, catmenu):
         " --template=\"index\"" \
         f" --variable=\"title:{title}\"" \
         f" --variable=\"category:{name}\"",
-        shell=True)
+        shell=True).wait()
 
 if __name__ == '__main__':
     categories = os.listdir(SRCDIR)
@@ -138,7 +138,7 @@ if __name__ == '__main__':
                 " --template=\"article\"" \
                 f" --variable=\"name:{name}\"" \
                 f" --variable=\"category:{cat}\"",
-                shell=True)
+                shell=True).wait()
 
     # Build category indexes
     for cat in posts_bycat:
