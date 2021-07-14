@@ -13,8 +13,8 @@ Just a simple blog
 ./build.py
 ```
 
-## Local server
+## Start Local server and auto build on file change
 
 ```
-python3 -m http.server -d .build
+./local-server.sh
 ```
