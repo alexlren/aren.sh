@@ -41,7 +41,7 @@
     --mark-color: #000;
     --separator-color: #eee;
     --menu-border-color: #eee;
-    --logo-filter: invert(0.73); /* To reproduce #444 bg */
+    --logo-filter: invert(0);
 }
 
 html {
@@ -418,6 +418,16 @@ footer {
     padding: 4px;
 }
 
+.menu-left, .menu-right {
+    display: flex;
+    align-items: center;
+}
+
+.menu-left > *, .menu-right > * {
+    margin-left: 2px;
+    margin-right: 2px;
+}
+
 ul.index > li {
     display: block;
     border-bottom: 1px solid var(--separator-color);
@@ -430,7 +440,8 @@ ul.index > li {
 }
 
 .logo {
-    width: 55px;
+    width: 48px;
+    height: 32px;
     filter: var(--logo-filter);
 }
 
@@ -457,7 +468,6 @@ input[type=checkbox]:focus {
     display: inline-block;
     position: relative;
     margin: 0;
-    top: 4px;
     border: 2px solid #474755;
     transition: all 0.2s ease;
 }

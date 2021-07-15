@@ -1,7 +1,7 @@
 <nav class="row header">
     <div class="menu">
         <div class="menu-left">
-            <img class="logo" src="/img/logo.png"><a href="/">$site_name$</a> | ${for(categories)}<a href="/category/${it}.html">${it/uppercase}</a>${sep} | ${endfor}
+            <img alt="Logo $site_name$" class="logo" src="/img/logo2.png"><a href="/">$site_name$</a> | ${for(categories)}<a href="/category/${it}.html">${it/uppercase}</a>${sep} | ${endfor}
         </div>
         <div class="menu-right">
             <input id="theme-switch" type="checkbox" class="toggle">
