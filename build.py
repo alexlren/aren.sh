@@ -108,7 +108,7 @@ if __name__ == '__main__':
         for fname in posts:
             f = os.path.join(catdir, fname)
             (name, ext) = os.path.splitext(fname)
-            if ext != '.md':
+            if ext != '.md' or name.startswith('.#'):
                 continue
             # Get all metadata as json
             mdjson = subprocess.check_output(

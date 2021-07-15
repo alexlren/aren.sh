@@ -2,6 +2,7 @@
 
 SRC=posts
 PUBLIC=public
+TEMPLATES=templates
 
 python3 -m http.server -d .build &
 
@@ -14,11 +15,9 @@ function cleanup() {
     kill $http_pid
 }
 
-inotifywait -e modify,moved_to,create --format '%f' -m -r "$SRC" "$PUBLIC" | \
+inotifywait -e modify,moved_to,create --format '%f' -m -r "$SRC" "$PUBLIC" "$TEMPLATES" | \
     while read -r filename; do
-        if [[ "$filename" != .#* ]]; then
+        if [[ "$filename" != .\#* && "$filename" != \#*\# ]]; then
             ./build.py
         fi
     done
-
-echo ok
