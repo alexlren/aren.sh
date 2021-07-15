@@ -44,13 +44,13 @@ Here `self.val`, `b` and `P` are supposedly close to 2<sup>256</sup> which is fi
 
 ### The common approach
 
-In C or Rust, we could imagine doing the same thing aka `(a + b) % P` but then you'd have to find an integer type that fits at least 256 bits.
+In C or Rust, we could imagine doing the same thing aka $(a + b) \mod P$ but then you'd have to find an integer type that fits at least 256 bits.
 
 Is that enough?
 
-Not really, if you add two `u256` numbers, the maximum result is $2^{256} - 1 + 2^{256} - 1$, i.e. $2^{257} - 2$ so we need to handle an extra carry bit.
+Not really, if you add two u256 numbers, the maximum result is $2^{256} - 1 + 2^{256} - 1$, i.e. $2^{257} - 2$ so we need to handle an extra carry bit.
 
-If we want to multiply two `u256` numbers, the maximum result is $(2^{256} - 1)(2^{256} - 1)$ i.e. $2^{512} - 2^{257} + 1$ so now we also need a `u512` type.
+If we want to multiply two u256 numbers, the maximum result is $(2^{256} - 1)(2^{256} - 1)$ i.e. $2^{512} - 2^{257} + 1$ so now we also need a u512 type.
 
 ```{.rust .numberLines}
 // after implementing u256 and u512
@@ -134,45 +134,77 @@ Ok, let's now define an `add` method (I'm not bringing additional traits yet):
 
 Ok, so far we can make an addition of two u256, but we haven't dealt with the modulo part or the final carry.
 
-If we call `R` the result of `A + B`, we actually have 3 cases.
+Actually we can define the result of $A + B$ as:
 
-#### 1. $R < P$
+$A + B = R_1 \cdot 2^{256} + R_0$
 
-The result is already less than `P` so nothing to do.
+with: $R_0 < 2^{256}$ and $R_1 \in (0, 1)$
 
-#### 2. $P \le R < 2^{256}$
+*Note: It helps to pick this form since our storage is 256 bits.*
+
+This gives us 3 cases:
+
+#### $R_1 = 0, R_0 < P$ (i.e. $R < P$)
+
+The result is already less than $P$ so nothing to do:
+
+\begin{equation}
+(A + B) \mod P = R_0\label{eq:1}
+\end{equation}
+
+#### $R_1 = 0, R_0 \ge P$ (i.e. $P \le R < 2^{256}$)
 
 Here the result hasn't overflowed 2<sup>256</sup>.
 
-We can just actually subtract P from the result: `R -= P`.
+\begin{equation}
+(A + B) \mod P = R_0 - P\label{eq:2}
+\end{equation}
 
 It's easy to prove:
 
-\begin{align}
-& R \mod P = R - P\lfloor\frac{R}{P}\rfloor\\
-& P \le R < 2^{256} < 2P\\
-& \frac{P}{P} \le \frac{R}{P} < \frac{2P}{P}\\
-& 1 \le \frac{R}{P} < 2\\
-& \Rightarrow \lfloor\frac{R}{P}\rfloor = 1\\
-& \Rightarrow R \mod P = R - P\\
-\end{align}
+\begin{align*}
+& R_0 \mod P = R_0 - P\lfloor\frac{R_0}{P}\rfloor\\
+& P \le R_0 < 2^{256} < 2P\\
+& 1 \le \frac{R_0}{P} < 2\\
+& \Rightarrow \lfloor\frac{R_0}{P}\rfloor = 1\\
+& \Rightarrow R_0 \mod P = R_0 - P\\
+& \Rightarrow (A + B) \mod P = R_0 - P\\
+\end{align*}
 
-#### 3. $R \ge 2^{256}$
+#### $R_1 = 1$ (i.e. $R \ge 2^{256}$)
 
 Here the result has overflowed. In this case:
 
-$R \mod P = R' + 2^{32} - 977$
+\begin{equation}
+(A + B) \mod P = R_0 + 2^{32} - 977\label{eq:3}
+\end{equation}
 
-We can define `R` as: $R = 2^{256} + R'$ with $R' < P$
+And here is the proof:
 
-\begin{align}
-& R = R' + 2^{256}\\
-& R \mod P = (R' + 2^{256}) \mod P = R' \mod P + 2^{256} \mod P\\
-& N \mod P = N\\
-& 2^{256} \mod P = 2^{256} - P\\
-& \Rightarrow R \mod P = N + 2^{256} - P\\
-& \Rightarrow R \mod P = N + 2^{32} + 977\\
-\end{align}
+\begin{align*}
+& A + B & = & R_0 + 2^{256}\\
+& (A + B) \mod P & = & (R_0 + 2^{256}) \mod P\\
+& & = & R_0 \mod P + 2^{256} \mod P\\
+\end{align*}
+
+yet:
+
+\begin{align*}
+& A < P, B < P & \Rightarrow & A + B < 2P\\
+& 2^{256} + R_0 < 2P & \Rightarrow & R_0 < 2P - 2^{256}\\
+& P < 2^{256} & \Rightarrow & R_0 < P\\
+& & \Rightarrow & R_0 \mod P = R_0\\
+\end{align*}
+
+And from \\eqref{eq:1}
+
+$2^{256} \mod P = 2^{256} - P$
+
+so:
+\begin{align*}
+& (A + B) \mod P = R_0 + 2^{256} - P\\
+& (A + B) \mod P = R_0 + 2^{32} + 977\\
+\end{align*}
 
 ### Addition v2
 
