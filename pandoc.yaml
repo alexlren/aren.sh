@@ -36,7 +36,7 @@ default-image-extension: ".jpg"
 highlight-style: espresso
 html-math-method:
   method: mathjax
-  url: "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
+  url: "https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.0/es5/tex-mml-chtml.min.js"
 
 tab-stop: 8
 preserve-tabs: true
