@@ -14,6 +14,18 @@ TEMPLATEDIR = os.path.join(CURDIR, TEMPLATE_DIRNAME)
 PUBLICDIR = os.path.join(CURDIR, PUBLIC_DIRNAME)
 
 
+def get_pandoc_options(outfile, template, context):
+    title = context['title']
+    menu = context['menu']
+    variables = ' '.join((f'--variable="{k}:{v}"' for k, v in context['variables'].items()))
+    options = " --defaults=./pandoc.yaml" \
+        f" {menu}" \
+        f" --metadata=\"pagetitle:{title}\"" \
+        f" -o \"{outfile}\"" \
+        f" --template=\"{template}\"" \
+        f" {variables}"
+    return options
+
 def build_rss_feed(posts):
     def rss_date(date_str):
         year, month, day = (int(d) for d in date_str.split('/'))
@@ -68,7 +80,7 @@ def build_rss_feed(posts):
             description=posts[0]['site_description'],
     ))
 
-def build_index(dirname, name, posts, catmenu, build_msg = ''):
+def build_index(dirname, name, posts, context):
     posts.sort(key=lambda x: x['date'], reverse=True)
     md='---\nlist: ' + json.dumps(posts) + '\n---\n'
     outdir = os.path.join(BUILDDIR, dirname)
@@ -79,17 +91,11 @@ def build_index(dirname, name, posts, catmenu, build_msg = ''):
         title = name
     print(f'Build {name} index -> {outfile}')
     os.makedirs(outdir, exist_ok=True)
-    subprocess.Popen(
-        f"""printf "%s" '{md}' | pandoc""" \
-        " --defaults=./pandoc.yaml" \
-        f" {catmenu}" \
-        f" -o \"{outfile}\"" \
-        f" --metadata=\"pagetitle:{name} {dirname}\"" \
-        " --template=\"index\"" \
-        f" --variable=\"title:{title}\"" \
-        f" --variable=\"category:{name}\"" \
-        f" --variable=\"build_msg:{build_msg}\"",
-        shell=True).wait()
+    context['title'] = title
+    context['variables']['title'] = title
+    context['variables']['category'] = name
+    options = get_pandoc_options(outfile, 'index', context)
+    subprocess.Popen(f"""printf "%s" '{md}' | pandoc {options}""", shell=True).wait()
 
 if __name__ == '__main__':
     if len(sys.argv) > 1:
@@ -99,7 +105,13 @@ if __name__ == '__main__':
 
     categories = os.listdir(SRCDIR)
 
-    catmenu = ' '.join(sorted((f'--metadata="categories:{catname}"' for catname in categories)))
+    menu = ' '.join(sorted((f'--metadata="categories:{catname}"' for catname in categories)))
+    context = {
+        'menu': menu,
+        'variables': { },
+    }
+
+    context['variables']['build_msg'] = build_msg
     # copy public files
     print(f'Copy public files -> {BUILDDIR}')
     shutil.copytree(PUBLICDIR, BUILDDIR, dirs_exist_ok=True)
@@ -135,28 +147,21 @@ if __name__ == '__main__':
             for tag in md['tags']:
                 posts_bytag.setdefault(tag, []).append(md)
             all_posts.append(md)
-            subprocess.Popen(
-                f"pandoc {f}" \
-                " --defaults=./pandoc.yaml" \
-                f" {catmenu}" \
-                f" -o \"{outfile}\"" \
-                f" --metadata=\"pagetitle:{md['title']}\"" \
-                " --template=\"article\"" \
-                f" --variable=\"name:{name}\"" \
-                f" --variable=\"category:{cat}\"" \
-                f" --variable=\"build_msg:{build_msg}\"",
-                shell=True).wait()
+            context['title'] = md['title']
+            context['variables']['category'] = cat
+            options = get_pandoc_options(outfile, 'article', context)
+            subprocess.Popen(f"pandoc {f} {options}", shell=True).wait()
 
     # Build category indexes
     for cat in posts_bycat:
-        build_index('category', cat, posts_bycat[cat], catmenu, build_msg)
+        build_index('category', cat, posts_bycat[cat], context)
 
     # Build tag indexes
     for tag in posts_bytag:
-        build_index('tag', tag, posts_bytag[tag], catmenu, build_msg)
+        build_index('tag', tag, posts_bytag[tag], context)
 
     # Build home
-    build_index('', 'index', all_posts, catmenu, build_msg)
+    build_index('', 'index', all_posts, context)
 
     # Add rss
     build_rss_feed(all_posts)
