@@ -1,6 +1,6 @@
 #! /usr/bin/env python3
 
-import datetime, json, os, shutil, subprocess
+import datetime, json, os, shutil, subprocess, sys
 
 
 SRC_DIRNAME = 'posts'
@@ -68,7 +68,7 @@ def build_rss_feed(posts):
             description=posts[0]['site_description'],
     ))
 
-def build_index(dirname, name, posts, catmenu):
+def build_index(dirname, name, posts, catmenu, build_msg = ''):
     posts.sort(key=lambda x: x['date'], reverse=True)
     md='---\nlist: ' + json.dumps(posts) + '\n---\n'
     outdir = os.path.join(BUILDDIR, dirname)
@@ -87,10 +87,16 @@ def build_index(dirname, name, posts, catmenu):
         f" --metadata=\"pagetitle:{name} {dirname}\"" \
         " --template=\"index\"" \
         f" --variable=\"title:{title}\"" \
-        f" --variable=\"category:{name}\"",
+        f" --variable=\"category:{name}\"" \
+        f" --variable=\"build_msg:{build_msg}\"",
         shell=True).wait()
 
 if __name__ == '__main__':
+    if len(sys.argv) > 1:
+        build_msg = sys.argv[1]
+    else:
+        build_msg = ''
+
     categories = os.listdir(SRCDIR)
 
     catmenu = ' '.join(sorted((f'--metadata="categories:{catname}"' for catname in categories)))
@@ -137,19 +143,20 @@ if __name__ == '__main__':
                 f" --metadata=\"pagetitle:{md['title']}\"" \
                 " --template=\"article\"" \
                 f" --variable=\"name:{name}\"" \
-                f" --variable=\"category:{cat}\"",
+                f" --variable=\"category:{cat}\"" \
+                f" --variable=\"build_msg:{build_msg}\"",
                 shell=True).wait()
 
     # Build category indexes
     for cat in posts_bycat:
-        build_index('category', cat, posts_bycat[cat], catmenu)
+        build_index('category', cat, posts_bycat[cat], catmenu, build_msg)
 
     # Build tag indexes
     for tag in posts_bytag:
-        build_index('tag', tag, posts_bytag[tag], catmenu)
+        build_index('tag', tag, posts_bytag[tag], catmenu, build_msg)
 
     # Build home
-    build_index('', 'index', all_posts, catmenu)
+    build_index('', 'index', all_posts, catmenu, build_msg)
 
     # Add rss
     build_rss_feed(all_posts)

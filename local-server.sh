@@ -15,6 +15,7 @@ function cleanup() {
     kill $http_pid
 }
 
+./build.py
 inotifywait -e modify,moved_to,create --format '%f' -m -r "$SRC" "$PUBLIC" "$TEMPLATES" | \
     while read -r filename; do
         if [[ "$filename" != .\#* && "$filename" != \#*\# ]]; then
