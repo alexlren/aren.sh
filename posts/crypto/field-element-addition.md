@@ -454,8 +454,12 @@ impl Fe {
         d4 += d3 >> 52;
         d3 &= 0x000fffffffffffffu64;
 
-        if d4 > 0x0000ffffffffffffu64 {
-            c = d4 >> 48;
+        if d4 > M48 || (d4 == M48 && d3 | d2 | d1 == M52 && d0 >= 0xffffefffffc2f) {
+            if d4 > M48 {
+                c = d4 >> 48;
+            } else {
+                c = 1
+            }
             d4 &= 0x0000ffffffffffffu64;
             d0 += c * 0x1000003d1u64;
             d1 += d0 >> 52;
@@ -466,6 +470,7 @@ impl Fe {
             d2 &= 0x000fffffffffffffu64;
             d4 += d3 >> 52;
             d3 &= 0x000fffffffffffffu64;
+            d4 &= M48;
         }
 
         self.d = [d0, d1, d2, d3, d4];
