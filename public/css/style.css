@@ -169,7 +169,7 @@ blockquote {
     color: var(--blockquote-color);
     margin: 0;
     padding-left: 3em;
-    border-left: 0.5em #EEE solid;
+    border-left: 0.5em var(--blockquote-color) solid;
 }
 
 hr {
