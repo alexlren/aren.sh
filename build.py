@@ -26,6 +26,10 @@ def get_pandoc_options(outfile, template, context):
         f" {variables}"
     return options
 
+def get_html_content(infile):
+    body = subprocess.check_output(f'pandoc "{infile}" -t html', shell=True)
+    return body.decode('utf-8')
+
 def build_rss_feed(posts):
     def rss_date(date_str):
         year, month, day = (int(d) for d in date_str.split('/'))
@@ -37,7 +41,7 @@ def build_rss_feed(posts):
     item_tmpl = """
 <item>
   <title>{title}</title>
-  <description>{description}</description>
+  <description><![CDATA[{description}]]></description>
   <link>{site_url}{url}</link>
   <guid>{url}</guid>
   <pubDate>{pub_date}</pubDate>
@@ -48,7 +52,7 @@ def build_rss_feed(posts):
 <channel>
   <title>{site_name}</title>
   <link>{site_url}/feed.xml</link>
-  <description>{description}</description>
+  <description><![CDATA[{description}]]></description>
   <image>
       <url>{site_url}/img/logo.png</url>
       <title>{site_name} logo</title>
@@ -61,12 +65,12 @@ def build_rss_feed(posts):
 </rss>
 """
     items = '\n'.join((item_tmpl.format(
-        title=a['title'],
-        site_url=a['site_url'],
-        url=a['url'],
-        description=a['description'],
-        pub_date=rss_date(a['date'])
-    ) for a in posts))
+        title=p['title'],
+        site_url=p['site_url'],
+        url=p['url'],
+        description=get_html_content(p['infile']),
+        pub_date=rss_date(p['date'])
+    ) for p in posts))
 
     outfile = os.path.join(BUILDDIR, 'feed.xml')
     print(f'Build rss feed -> {outfile}')
@@ -133,21 +137,23 @@ if __name__ == '__main__':
                 f'pandoc {f} --data-dir=. -t html --metadata-file=./metadata.yaml --template=metadata',
                 shell=True,
             )
-            md = json.loads(mdjson)
-            url = '/{}/{}/{}.html'.format(md['date'], cat, name)
+            post = json.loads(mdjson)
+            url = '/{}/{}/{}.html'.format(post['date'], cat, name)
             outfile = BUILDDIR + url
-            md['url'] = url
+            post['url'] = url
+            post['infile'] = f
             outdir = os.path.dirname(outfile)
             os.makedirs(outdir, exist_ok=True)
 
             print(f'Build page -> {outfile}')
 
             # Add post to proper list
-            posts_bycat[cat].append(md)
-            for tag in md['tags']:
-                posts_bytag.setdefault(tag, []).append(md)
-            all_posts.append(md)
-            context['title'] = md['title']
+            posts_bycat[cat].append(post)
+            for tag in post['tags']:
+                posts_bytag.setdefault(tag, []).append(post)
+
+            all_posts.append(post)
+            context['title'] = post['title']
             context['variables']['category'] = cat
             options = get_pandoc_options(outfile, 'article', context)
             subprocess.Popen(f"pandoc {f} {options}", shell=True).wait()
