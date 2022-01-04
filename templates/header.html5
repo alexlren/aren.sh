@@ -29,7 +29,7 @@ $endif$
   <link rel="manifest" href="/site.webmanifest">
 $for(css)$
   <link rel="stylesheet" href="$css$" />
-  $endfor$
+$endfor$
   <script src="/js/mathjax.config.js" defer></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.0/es5/tex-mml-chtml.min.js" type="text/javascript" defer></script>
   <!--[if lt IE 9]>
@@ -41,6 +41,18 @@ $endfor$
   <script src="/js/main.js" async></script>
 </head>
 <body>
+  <script>
+    (function() {
+        // Block page until the theme is set
+        window.__LS_DARK_THEME_KEY = 'dark_theme';
+
+        const darkTheme = !!localStorage.getItem(window.__LS_DARK_THEME_KEY);
+
+        if (darkTheme) {
+            document.documentElement.setAttribute('data-theme', 'dark');
+        }
+    })();
+  </script>
   <div class="box">
 $for(include-before)$
 $include-before$
