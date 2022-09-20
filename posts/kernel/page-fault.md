@@ -51,7 +51,7 @@ The MMU can then use the page index to retrieve the page frame from the page tab
 
 A page table entry contains more than just the page frame number:
 
-<img src="/img/misc/page-fault/page_table_entry.jpg">
+<img src="/img/kernel/page-fault/page_table_entry.jpg">
 
 with:
 
@@ -65,7 +65,7 @@ with:
 
 For example: If there are 16 virtual pages to represent address from 0 to 65536. Each address could be made of 4 bits to represent the virtual page index and 12 bits for the offset, which gives us 4096 possible offsets so each page should be 4096. In this case, address 24976 (= 0x6190) can be seen as 4 bits, 0x6, for the virtual page number and 12 bits, 0x190 = 400, for the offset.
 
-<img src="/img/misc/page-fault/virtual_mapping.jpg">
+<img src="/img/kernel/page-fault/virtual_mapping.jpg">
 
 Now accessing address `24976` is at virtual page 6. Virtual page 6 starts at address 24576 ($4096 x 6$) and the address has an offset of 400 so the MMU translates it to page frame 3 with offset 400 so it becomes $8192 + 400 = 8592$
 
