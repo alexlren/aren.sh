@@ -2,18 +2,18 @@
 
 /* ubuntu-300 - latin */
 @font-face {
-  font-family: 'Ubuntu';
-  font-style: normal;
-  font-weight: 300;
-  font-display: swap;
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-  src: url('../fonts/ubuntu-v15-latin-300.eot'); /* IE9 Compat Modes */
-  src: local(''),
-       url('../fonts/ubuntu-v15-latin-300.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
-       url('../fonts/ubuntu-v15-latin-300.woff2') format('woff2'), /* Super Modern Browsers */
-       url('../fonts/ubuntu-v15-latin-300.woff') format('woff'), /* Modern Browsers */
-       url('../fonts/ubuntu-v15-latin-300.ttf') format('truetype'), /* Safari, Android, iOS */
-       url('../fonts/ubuntu-v15-latin-300.svg#Ubuntu') format('svg'); /* Legacy iOS */
+    font-family: 'Ubuntu';
+    font-style: normal;
+    font-weight: 300;
+    font-display: swap;
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    src: url('../fonts/ubuntu-v15-latin-300.eot'); /* IE9 Compat Modes */
+    src: local(''),
+         url('../fonts/ubuntu-v15-latin-300.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+         url('../fonts/ubuntu-v15-latin-300.woff2') format('woff2'), /* Super Modern Browsers */
+         url('../fonts/ubuntu-v15-latin-300.woff') format('woff'), /* Modern Browsers */
+         url('../fonts/ubuntu-v15-latin-300.ttf') format('truetype'), /* Safari, Android, iOS */
+         url('../fonts/ubuntu-v15-latin-300.svg#Ubuntu') format('svg'); /* Legacy iOS */
 }
 
 
@@ -481,32 +481,60 @@ input[type=checkbox]:focus {
     outline: 0;
 }
 
-.toggle {
-    height: 20px;
-    width: 32px;
-    border-radius: 16px;
+#theme-color-switch {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+#theme-color-switch > span {
+    font-size: 30px;
     display: inline-block;
+    margin-right: 8px;
+}
+
+#theme-color-switch svg {
+    width: 24px;
+    height: 24px;
+    margin: 0 4px;
+}
+
+#theme-color-switch input[type=checkbox] {
+    height: 0;
+    width: 0;
+    visibility: hidden;
+}
+
+#theme-color-switch label {
+    cursor: pointer;
+    text-indent: -9999px;
+    width: 42px;
+    height: 21px;
+    border-radius: 30px;
+    background: var(--menu-border-color);
+    /* var(--color-toggle-accent); */
+    display: block;
     position: relative;
     margin: 0;
-    border: 2px solid var(--menu-border-color);
-    transition: all 0.2s ease;
 }
-.toggle:after {
-    content: "";
+
+#theme-color-switch label:after {
+    content: '';
     position: absolute;
-    top: 1px;
-    left: 1px;
-    width: 14px;
-    height: 14px;
-    border-radius: 50%;
-    background-color: #222;
-    box-shadow: 0 1px 2px rgba(44, 44, 44, 0.2);
-    transition: all 0.2s cubic-bezier(0.5, 0.1, 0.75, 1.35);
+    top: 3px;
+    left: 3px;
+    width: 15px;
+    height: 15px;
+    background: #fff;
+    border-radius: 90px;
+    transition: 0.3s;
 }
-.toggle:checked {
-    border-color: var(--menu-border-color);
+
+#theme-color-switch input:checked + label:after {
+    left: calc(100% - 3px);
+    transform: translateX(-100%);
 }
-.toggle:checked:after {
-    background-color: #fff;
-    transform: translatex(12px);
+
+#theme-color-switch label:active:after {
+    width: 30px;
 }

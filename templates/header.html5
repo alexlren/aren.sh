@@ -41,18 +41,6 @@ $endfor$
   <script src="/js/main.js" async></script>
 </head>
 <body>
-  <script>
-    (function() {
-        // Block page until the theme is set
-        window.__LS_DARK_THEME_KEY = 'dark_theme';
-
-        const darkTheme = !!localStorage.getItem(window.__LS_DARK_THEME_KEY);
-
-        if (darkTheme) {
-            document.documentElement.setAttribute('data-theme', 'dark');
-        }
-    })();
-  </script>
   <div class="box">
 $for(include-before)$
 $include-before$

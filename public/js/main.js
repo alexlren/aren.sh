@@ -1,17 +1,31 @@
+window.__LS_THEME_KEY = 'current_theme';
+
+const setThemeMode = (mode) => {
+    document.documentElement.setAttribute('data-theme', mode);
+};
+
+const getSavedTheme = () => {
+    return localStorage.getItem(window.__LS_THEME_KEY) === 'dark' ? 'dark' : 'light';
+};
+
+const saveCurrentTheme = (newTheme) => {
+    localStorage.setItem(window.__LS_THEME_KEY, newTheme);
+};
+
 window.onload = function () {
     const themeSwitchBtn = document.getElementById('theme-switch');
 
-    themeSwitchBtn.checked = !!localStorage.getItem(window.__LS_DARK_THEME_KEY);
-
-    themeSwitchBtn.onchange = function () {
+    themeSwitchBtn.onchange = () => {
         const curTheme = document.documentElement.getAttribute('data-theme');
-        const newTheme = curTheme === 'dark' ? '' : 'dark';
+        const newTheme = curTheme === 'dark' ? 'light' : 'dark';
 
-        document.documentElement.setAttribute('data-theme', newTheme);
-        if (newTheme === 'dark') {
-            localStorage.setItem(window.__LS_DARK_THEME_KEY, true);
-        } else {
-            localStorage.removeItem(window.__LS_DARK_THEME_KEY);
-        }
+        saveCurrentTheme(newTheme);
+        setThemeMode(newTheme);
     };
+
+    const theme = getSavedTheme();
+    themeSwitchBtn.checked = theme === 'dark';
 };
+
+const savedTheme = getSavedTheme();
+setThemeMode(savedTheme);
