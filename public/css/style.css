@@ -88,7 +88,7 @@ body {
 
 .box .header {
     flex: 0 1 auto;
-    margin: 10px;
+    margin: 10px 0;
 }
 
 .box .content {
@@ -430,22 +430,44 @@ footer {
     border-bottom: solid 1px var(--separator-color);
 }
 
-.menu {
+.nav {
     font-family: 'courier new';
+    padding: 4px;
     display: flex;
     justify-content: space-between;
     border: solid 1px var(--menu-border-color);
-    padding: 4px;
 }
 
-.menu-left, .menu-right {
+.nav-left, .nav-right {
     display: flex;
     align-items: center;
 }
 
-.menu-left > *, .menu-right > * {
+.nav-left > *, .nav-right > * {
     margin-left: 2px;
     margin-right: 2px;
+}
+
+.menu {
+    display: flex;
+    font-family: 'courier new', monospace;
+    font-size: 0.90em;
+    justify-content: flex-start;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+ul.menu > li {
+    display: flex;
+    align-items: flex-start;
+    padding: 0 10px;
+    border-left: solid 1px var(--separator-color);
+}
+
+ul.menu > li:first-child {
+    border-left: none;
+    padding-left: 0;
 }
 
 ul.index > li {

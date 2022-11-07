@@ -45,5 +45,6 @@ $endfor$
 $for(include-before)$
 $include-before$
 $endfor$
+${nav()}
 ${menu()}
 <div class="row content">
