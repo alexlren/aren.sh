@@ -31,6 +31,6 @@ jobs:
 
     - run: ./build.py --build-msg "<a href=\"https://github.com/${GITHUB_REPOSITORY}/commit/${GITHUB_SHA}\">${GITHUB_SHA:0:8}</a>"
 
-    - run: 'aws s3 sync --delete .build s3://${S3_ENDPOINT}'
+    - run: 'aws s3 sync .build s3://${S3_ENDPOINT}'
       env:
         S3_ENDPOINT: ${{ secrets.S3_ENDPOINT }}
