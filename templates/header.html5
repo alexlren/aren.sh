@@ -30,10 +30,6 @@ $endif$
 $for(css)$
   <link rel="stylesheet" href="$css$" />
 $endfor$
-  <script src="/js/mathjax.config.js" defer></script>
-$if(math)$
-  $math$
-$endif$
   <!--[if lt IE 9]>
     <script src="/js/html5shiv-printshiv.min.js"></script>
   <![endif]-->

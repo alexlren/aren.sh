@@ -4,7 +4,7 @@ import argparse, datetime, json, os, shutil, subprocess, sys, yaml
 from functools import reduce
 from collections import defaultdict
 from os import path
-
+from tempfile import mkdtemp
 
 SRC_DIRNAME = 'posts'
 TEMPLATE_DIRNAME = 'templates'
@@ -17,7 +17,7 @@ TEMPLATEDIR = path.join(CURDIR, TEMPLATE_DIRNAME)
 PUBLICDIR = path.join(CURDIR, PUBLIC_DIRNAME)
 
 
-def get_pandoc_options(outfile, template, metadata):
+def get_pandoc_options(template, metadata):
     title = metadata['title']
     categories = metadata['categories']
     menu = ' '.join(sorted((f'--metadata="categories:{catname}"' for catname in categories)))
@@ -25,7 +25,6 @@ def get_pandoc_options(outfile, template, metadata):
     options = " --defaults=./pandoc.yaml" \
         f" {menu}" \
         f" --metadata=\"pagetitle:{title}\"" \
-        f" -o \"{outfile}\"" \
         f" --template=\"{template}\"" \
         f" {variables}"
     return options
@@ -108,8 +107,8 @@ def build_index(outfile, name, posts, options):
             'build_msg': options['build_msg'],
         },
     }
-    options = get_pandoc_options(outfile, 'index', metadata)
-    subprocess.Popen(f"""printf "%s" '{md}' | pandoc {options}""", shell=True).wait()
+    options = get_pandoc_options('index', metadata)
+    subprocess.Popen(f"""printf "%s" '{md}' | pandoc {options} -o {outfile}""", shell=True).wait()
 
 
 def build_metadata_from(mdfilename, name, options):
@@ -135,11 +134,20 @@ def build_page(mdfilename, options):
     # Get all metadata as json
     metadata = build_metadata_from(mdfilename, name, options)
     outfile = BUILDDIR + metadata['url']
-    os.makedirs(path.dirname(outfile), exist_ok=True)
-    print(f'Build page -> {outfile}')
-    options = get_pandoc_options(outfile, 'article', metadata)
-    subprocess.Popen(f"pandoc {mdfilename} {options}", shell=True).wait()
-    return metadata
+    tmpdir = mkdtemp()
+    tmpfile = tmpdir + metadata['url']
+    try:
+        os.makedirs(path.dirname(tmpfile), exist_ok=True)
+        os.makedirs(path.dirname(outfile), exist_ok=True)
+        print(f'Build page -> {tmpfile}')
+        options = get_pandoc_options('article', metadata)
+        subprocess.Popen(f"pandoc {mdfilename} {options} -o {tmpfile}", shell=True).wait()
+        print(f'Post process page {tmpfile} -> {outfile}')
+        subprocess.Popen(f"node tools/tex2chtml.js {tmpfile} {outfile}", shell=True).wait()
+        return metadata
+    except Exception as err:
+        shutil.rmtree(tmpdir)
+        raise err
 
 
 def build_assets():

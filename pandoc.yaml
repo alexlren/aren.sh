@@ -34,8 +34,6 @@ default-image-extension: ".jpg"
 
 # either a style name of a style definition file:
 highlight-style: espresso
-html-math-method:
-  method: mathjax
 
 tab-stop: 8
 preserve-tabs: true
