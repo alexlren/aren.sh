@@ -1,23 +1,27 @@
 #! /usr/bin/env python3
 
-import datetime, json, os, shutil, subprocess, sys
+import argparse, datetime, json, os, shutil, subprocess, sys, yaml
+from functools import reduce
+from collections import defaultdict
+from os import path
 
 
 SRC_DIRNAME = 'posts'
 TEMPLATE_DIRNAME = 'templates'
 PUBLIC_DIRNAME = 'public'
 
-CURDIR = os.path.dirname(os.path.realpath(__file__))
-BUILDDIR = os.path.join(CURDIR, '.build')
-SRCDIR = os.path.join(CURDIR, SRC_DIRNAME)
-TEMPLATEDIR = os.path.join(CURDIR, TEMPLATE_DIRNAME)
-PUBLICDIR = os.path.join(CURDIR, PUBLIC_DIRNAME)
+CURDIR = path.dirname(path.realpath(__file__))
+BUILDDIR = path.join(CURDIR, '.build')
+SRCDIR = path.join(CURDIR, SRC_DIRNAME)
+TEMPLATEDIR = path.join(CURDIR, TEMPLATE_DIRNAME)
+PUBLICDIR = path.join(CURDIR, PUBLIC_DIRNAME)
 
 
-def get_pandoc_options(outfile, template, context):
-    title = context['title']
-    menu = context['menu']
-    variables = ' '.join((f'--variable="{k}:{v}"' for k, v in context['variables'].items()))
+def get_pandoc_options(outfile, template, metadata):
+    title = metadata['title']
+    categories = metadata['categories']
+    menu = ' '.join(sorted((f'--metadata="categories:{catname}"' for catname in categories)))
+    variables = ' '.join((f'--variable="{k}:{v}"' for k, v in metadata['variables'].items()))
     options = " --defaults=./pandoc.yaml" \
         f" {menu}" \
         f" --metadata=\"pagetitle:{title}\"" \
@@ -26,15 +30,21 @@ def get_pandoc_options(outfile, template, context):
         f" {variables}"
     return options
 
+
 def get_html_content(infile):
     body = subprocess.check_output(f'pandoc "{infile}" -t html', shell=True)
     return body.decode('utf-8')
+
 
 def build_rss_feed(posts):
     def rss_date(date_str):
         year, month, day = (int(d) for d in date_str.split('/'))
         date = datetime.date(year, month, day)
         return date.strftime('%a, %d %b %Y 00:00:00 +0000')
+
+    # Retrieve metadata
+    with open('./metadata.yaml', 'r') as f:
+        metadata = yaml.safe_load(f)
 
     pub_date = rss_date(posts[0]['date'])
     build_date = datetime.date.today().strftime("%a, %d %b %Y %H:%M:%S %z")
@@ -66,108 +76,134 @@ def build_rss_feed(posts):
 """
     items = '\n'.join((item_tmpl.format(
         title=p['title'],
-        site_url=p['site_url'],
+        site_url=metadata['site_url'],
         url=p['url'],
-        description=get_html_content(p['infile']),
+        description=get_html_content(p['path']),
         pub_date=rss_date(p['date'])
     ) for p in posts))
 
-    outfile = os.path.join(BUILDDIR, 'feed.xml')
+    outfile = path.join(BUILDDIR, 'feed.xml')
     print(f'Build rss feed -> {outfile}')
     with open(outfile, 'w') as fd:
         fd.write(feed_tmpl.format(
             build_date=build_date,
             pub_date=pub_date,
             items=items,
-            site_url=posts[0]['site_url'],
-            site_name=posts[0]['site_name'],
-            description=posts[0]['site_description'],
+            site_url=metadata['site_url'],
+            site_name=metadata['site_name'],
+            description=metadata['site_description'],
     ))
 
-def build_index(dirname, name, posts, context):
+
+def build_index(outfile, name, posts, options):
     posts.sort(key=lambda x: x['date'], reverse=True)
     md='---\nlist: ' + json.dumps(posts) + '\n---\n'
-    outdir = os.path.join(BUILDDIR, dirname)
-    outfile = os.path.join(outdir, name + '.html')
-    if dirname != '':
-        title = dirname + ' / ' + name
-    else:
-        title = name
+    outdir = path.dirname(outfile)
     print(f'Build {name} index -> {outfile}')
     os.makedirs(outdir, exist_ok=True)
-    context['title'] = title
-    context['variables']['title'] = title
-    context['variables']['category'] = name
-    options = get_pandoc_options(outfile, 'index', context)
+    metadata = {
+        'title': name,
+        'categories': options['categories'],
+        'variables': {
+            'build_msg': options['build_msg'],
+        },
+    }
+    options = get_pandoc_options(outfile, 'index', metadata)
     subprocess.Popen(f"""printf "%s" '{md}' | pandoc {options}""", shell=True).wait()
 
-if __name__ == '__main__':
-    if len(sys.argv) > 1:
-        build_msg = sys.argv[1]
-    else:
-        build_msg = ''
 
-    categories = os.listdir(SRCDIR)
+def build_metadata_from(mdfilename, name, options):
+    with open(mdfilename, 'r') as md:
+        content = md.read()
+        y = content.split('---')[1]
+        metadata = yaml.safe_load(y)
+        metadata['categories'] = options['categories']
+        metadata['variables'] = {
+            'build_msg': options['build_msg'],
+            'category': path.basename(path.dirname(mdfilename)),
+        }
+        metadata['url'] = '/{}/{}.html'.format(metadata['date'], name)
+        metadata['path'] = mdfilename
+        return metadata
+    return None
 
-    menu = ' '.join(sorted((f'--metadata="categories:{catname}"' for catname in categories)))
-    context = {
-        'menu': menu,
-        'variables': { },
-    }
 
-    context['variables']['build_msg'] = build_msg
-    # copy public files
-    print(f'Copy public files -> {BUILDDIR}')
+def build_page(mdfilename, options):
+    (name, ext) = path.splitext(path.basename(mdfilename))
+    if ext != '.md' or name.startswith('.#'):
+        return
+    # Get all metadata as json
+    metadata = build_metadata_from(mdfilename, name, options)
+    outfile = BUILDDIR + metadata['url']
+    os.makedirs(path.dirname(outfile), exist_ok=True)
+    print(f'Build page -> {outfile}')
+    options = get_pandoc_options(outfile, 'article', metadata)
+    subprocess.Popen(f"pandoc {mdfilename} {options}", shell=True).wait()
+    return metadata
+
+
+def build_assets():
+    print(f'Copy assets -> {BUILDDIR}')
     shutil.copytree(PUBLICDIR, BUILDDIR, dirs_exist_ok=True)
 
-    all_posts = []
-    posts_bycat = {}
-    posts_bytag = {}
-    for cat in categories:
-        catdir = os.path.join(SRCDIR, cat)
+
+def build_categories_index(pages, options):
+    page_groups = reduce(lambda grp, page: grp[page['variables']['category']].append(page) or grp, pages, defaultdict(list))
+    for category, posts in page_groups.items():
+        outfile = path.join(BUILDDIR, category, 'index.html')
+        build_index(outfile, category, posts, options)
+
+
+def build_tags_index(pages, options):
+    page_groups = {}
+    for page in pages:
+        for tag in page['tags']:
+            page_groups.setdefault(tag, [])
+            page_groups[tag].append(page)
+    for tag, posts in page_groups.items():
+        outfile = path.join(BUILDDIR, 'tag', f'{tag}.html')
+        build_index(outfile, tag, posts, options)
+
+
+def main(argv):
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        '--build-msg', type=str,
+        default='',
+        help='Message displayed at the bottom of the pages',
+    )
+
+    args = parser.parse_args()
+
+    categories = os.listdir(SRCDIR)
+    pages = []
+    options = {
+        'build_msg': args.build_msg,
+        'categories': sorted(categories),
+    }
+
+    # Build pages
+    for category in categories:
+        catdir = path.join(SRCDIR, category)
         posts = os.listdir(catdir)
-        posts_bycat[cat] = []
-        for fname in posts:
-            f = os.path.join(catdir, fname)
-            (name, ext) = os.path.splitext(fname)
-            if ext != '.md' or name.startswith('.#'):
-                continue
-            # Get all metadata as json
-            mdjson = subprocess.check_output(
-                f'pandoc {f} --data-dir=. -t html --metadata-file=./metadata.yaml --template=metadata',
-                shell=True,
-            )
-            post = json.loads(mdjson)
-            url = '/{}/{}/{}.html'.format(post['date'], cat, name)
-            outfile = BUILDDIR + url
-            post['url'] = url
-            post['infile'] = f
-            outdir = os.path.dirname(outfile)
-            os.makedirs(outdir, exist_ok=True)
 
-            print(f'Build page -> {outfile}')
+        for postfilename in posts:
+            post = path.join(catdir, postfilename)
+            page = build_page(post, options)
+            pages.append(page)
 
-            # Add post to proper list
-            posts_bycat[cat].append(post)
-            for tag in post['tags']:
-                posts_bytag.setdefault(tag, []).append(post)
+    # JS / CSS / Images / Fonts
+    build_assets()
+    # Build <category>/index.html
+    build_categories_index(pages, options)
+    # Build tag/<tag>.html
+    build_tags_index(pages, options)
+    # Build index.html
+    build_index(path.join(BUILDDIR, 'index.html'), 'index', pages, options)
+    # Build feed.xml
+    build_rss_feed(pages)
+    return 0
 
-            all_posts.append(post)
-            context['title'] = post['title']
-            context['variables']['category'] = cat
-            options = get_pandoc_options(outfile, 'article', context)
-            subprocess.Popen(f"pandoc {f} {options}", shell=True).wait()
 
-    # Build category indexes
-    for cat in posts_bycat:
-        build_index('category', cat, posts_bycat[cat], context)
-
-    # Build tag indexes
-    for tag in posts_bytag:
-        build_index('tag', tag, posts_bytag[tag], context)
-
-    # Build home
-    build_index('', 'index', all_posts, context)
-
-    # Add rss
-    build_rss_feed(all_posts)
+if __name__ == '__main__':
+    sys.exit(main(sys.argv))
