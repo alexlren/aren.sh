@@ -33,6 +33,13 @@ $endfor$
   <!--[if lt IE 9]>
     <script src="/js/html5shiv-printshiv.min.js"></script>
   <![endif]-->
+$if(category)$
+<style>
+ .main-${category} > a {
+     text-decoration: underline;
+ }
+</style>
+$endif$
 $for(header-includes)$
   $header-includes$
 $endfor$

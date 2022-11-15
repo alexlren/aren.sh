@@ -105,6 +105,7 @@ def build_index(outfile, name, posts, options):
         'categories': options['categories'],
         'variables': {
             'build_msg': options['build_msg'],
+            'category': options.get('category', ''),
         },
     }
     options = get_pandoc_options('index', metadata)
@@ -159,7 +160,7 @@ def build_categories_index(pages, options):
     page_groups = reduce(lambda grp, page: grp[page['variables']['category']].append(page) or grp, pages, defaultdict(list))
     for category, posts in page_groups.items():
         outfile = path.join(BUILDDIR, category, 'index.html')
-        build_index(outfile, category, posts, options)
+        build_index(outfile, category, posts, {**options, 'category': category})
 
 
 def build_tags_index(pages, options):
