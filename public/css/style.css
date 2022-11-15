@@ -40,10 +40,10 @@
 }
 
 [data-theme="dark"] {
-    --main-bg-color: #000;
-    --main-color: #fff;
+    --main-bg-color: #191b1c;
+    --main-color: #bdb7af;
     --link-visited-color: #0080FF;
-    --link-color: #0080FF;
+    --link-color: #66b1fa;
     --link-hover-color: #2348b2;
     --link-active-color: #faa700;
     --selection-bg-color: rgba(255, 255, 0, 0.3);
@@ -57,7 +57,7 @@
     --mark-bg-color: #ff0;
     --mark-color: #000;
     --separator-color: #eee;
-    --menu-border-color: #0080FF;
+    --menu-border-color: #5a6165;
     --logo-filter: invert(0);
 }
 
