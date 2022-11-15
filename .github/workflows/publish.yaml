@@ -42,3 +42,7 @@ jobs:
     - run: 'aws s3 sync .build s3://${S3_ENDPOINT}'
       env:
         S3_ENDPOINT: ${{ secrets.S3_ENDPOINT }}
+
+    - run: 'aws --profile shaoner cloudfront create-invalidation --distribution-id ${CF_DISTRIBUTION} --paths "/*"'
+      env:
+        CF_DISTRIBUTION: ${{ secrets.CF_DISTRIBUTION }}
