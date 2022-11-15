@@ -3,7 +3,7 @@ $if(title)$
 <header class="title-block-header">
 <h1 class="title">$title$</h1>
 <p class="metadata">
-    $date$ | by $author$ | <a href="/category/$category$.html">$category$</a>
+    $date$ | by $author$ | <a href="/$category$">$category$</a>
 </p>
 </header>
 $endif$
