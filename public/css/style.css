@@ -1,5 +1,4 @@
 /* Fonts */
-
 @font-face {
   font-family: 'IBM Plex Mono';
   font-style: italic;
@@ -39,7 +38,7 @@
     --link-color: #0645ad;
     --link-hover-color: #06e;
     --link-active-color: #faa700;
-    --selection-bg-color: rgba(255, 255, 0, 0.3);
+    --selection-bg-color: rgba(0, 120, 255, 0.3);
     --selection-color: #000;
     --header-color: #111;
     --blockquote-color: #666;
@@ -61,7 +60,7 @@
     --link-color: #66b1fa;
     --link-hover-color: #2348b2;
     --link-active-color: #faa700;
-    --selection-bg-color: rgba(255, 255, 0, 0.3);
+    --selection-bg-color: rgba(160, 220, 255, 0.8);
     --selection-color: #000;
     --header-color: #eee;
     --blockquote-color: #666;
