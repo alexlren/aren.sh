@@ -1,9 +1,9 @@
 lang: en
 site_name: shaoner.com
 site_url: https://shaoner.com
-site_description: My kids will speak C before they speak English
+site_description: My kids will speak Rust before they speak English
 github_username: alexlren
-author: Alex Ren
+author: Alex Laurent
 tags:
   - crypto
   - cryptography
