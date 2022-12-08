@@ -1,6 +1,7 @@
-<nav class="header">
-    <div class="nav">
-        <div class="nav-left">
+<header>
+    <nav class="navbar">
+    <div class="container">
+     <div class="nav-left">
             <svg width="32" height="32" version="1.1" viewBox="0 0 10.064 10.064" xmlns="http://www.w3.org/2000/svg" style="background-color: #000">
                 <g>
                     <path d="m7.917 1.5912-1.3833 1.1548a2.8844 2.4081 0 0 0-1.5015-0.35176 2.8844 2.4081 0 0 0-1.5005 0.35342l-1.3842-1.1557v3.2106a2.8844 2.4081 0 0 0 2.8848 2.4076 2.8844 2.4081 0 0 0 2.8848-2.4076zm-4.1567 2.5917a0.76918 0.64217 0 0 1 0.76914 0.64213 0.76918 0.64217 0 0 1-0.76914 0.64213 0.76918 0.64217 0 0 1-0.76914-0.64213 0.76918 0.64217 0 0 1 0.76914-0.64213zm2.5439 0a0.76918 0.64217 0 0 1 0.76914 0.64213 0.76918 0.64217 0 0 1-0.76914 0.64213 0.76918 0.64217 0 0 1-0.76914-0.64213 0.76918 0.64217 0 0 1 0.76914-0.64213z" fill="#fff" stroke-linecap="square" stroke-width="7.2302"/>
@@ -9,6 +10,9 @@
                 </g>
             </svg>
             <a href="/">$site_name$</a>
+        </div>
+        <div class="nav-center">
+        ${menu()}
         </div>
         <div class="nav-right">
             <div id="theme-color-switch">
@@ -23,4 +27,5 @@
             </div>
         </div>
     </div>
-</nav>
+    </nav>
+</header>

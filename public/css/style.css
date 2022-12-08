@@ -48,8 +48,8 @@
     --ins-color: #000;
     --mark-bg-color: #ff0;
     --mark-color: #000;
-    --separator-color: #aaa;
-    --menu-border-color: #777;
+    --separator-color: #ccc;
+    --menu-border-color: #ddd;
     --logo-filter: invert(0);
 }
 
@@ -88,21 +88,17 @@ body {
     font-family: 'IBM Plex Mono', monospace;
     font-size: 12px;
     line-height: 1.7;
-    margin: auto;
-    max-width: 62em;
     background-color: var(--main-bg-color);
     height: 100%;
+    margin: 0;
 }
 
 .box {
     display: flex;
     flex-flow: column;
     height: 100%;
-}
-
-.box .header {
-    flex: 0 1 auto;
-    margin: 10px 0;
+    max-width: 780px;
+    margin: auto;
 }
 
 .box .content {
@@ -130,10 +126,6 @@ a:hover {
 
 a:active {
     color: var(--link-active-color);
-}
-
-a:focus {
-    outline: thin dotted;
 }
 
 *::-moz-selection {
@@ -440,19 +432,82 @@ footer {
     border-bottom: solid 1px var(--separator-color);
 }
 
-.nav {
+.navbar {
+    display: block;
     padding: 4px;
-    display: flex;
-    justify-content: space-between;
-    border: solid 1px var(--menu-border-color);
+    background-color: var(--main-bg-color);
+    min-height: 3rem;
+    line-height: 3rem;
+    border-bottom: solid 1px var(--menu-border-color);
+    position: fixed;
+    width: 100%;
+    z-index: 1000;
 }
 
-.nav-left, .nav-right {
+.navbar > .container {
+  width: auto;
+  max-width: 1200px;
+  text-align: center;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+}
+
+.navbar a {
+    color: var(--header-color);
+}
+
+.navbar a:hover {
+    color: var(--link-hover-color);
+}
+
+.navbar a:active {
+    color: var(--link-active-color);
+}
+
+
+.nav-center,
+.nav-left,
+.nav-right {
     display: flex;
+    flex: 1;
     align-items: center;
 }
 
-.nav-left > *, .nav-right > * {
+.nav-left {
+    justify-content: flex-start;
+}
+
+.nav-center {
+    justify-content: center;
+}
+
+.nav-right {
+    justify-content: flex-end;
+}
+
+@media screen and (max-width: 480px) {
+    .navbar {
+        width: auto;
+        position: initial;
+    }
+
+    .navbar > .container {
+        flex-wrap: wrap;
+    }
+
+    .nav-left,
+    .nav-right {
+        flex-basis: calc(100% / 3);
+    }
+
+    .nav-center {
+        flex-basis: 100%;
+        order: 3;
+    }
+}
+
+.nav-left > *, .nav-right > *, .nav-center > * {
     margin-left: 2px;
     margin-right: 2px;
 }

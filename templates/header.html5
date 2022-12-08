@@ -46,10 +46,9 @@ $endfor$
   <script src="/js/main.js" async></script>
 </head>
 <body>
+${nav()}
   <div class="box">
 $for(include-before)$
 $include-before$
 $endfor$
-${nav()}
-${menu()}
 <div class="row content">
