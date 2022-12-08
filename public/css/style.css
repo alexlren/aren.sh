@@ -54,11 +54,11 @@
 }
 
 [data-theme="dark"] {
-    --main-bg-color: #191b1c;
+    --main-bg-color: #2e3b42;
     --main-color: #bdb7af;
     --link-visited-color: #0080FF;
     --link-color: #66b1fa;
-    --link-hover-color: #2348b2;
+    --link-hover-color: #518dc8;
     --link-active-color: #faa700;
     --selection-bg-color: rgba(160, 220, 255, 0.8);
     --selection-color: #000;
