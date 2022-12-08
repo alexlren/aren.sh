@@ -693,6 +693,8 @@ a.toc-link {
 
 @media screen and (max-width: 480px) {
     .toc {
-        display: none;
+        position: initial;
+        width: auto;
+        padding-top: 0;
     }
 }

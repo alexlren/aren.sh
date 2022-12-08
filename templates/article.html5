@@ -1,4 +1,6 @@
 ${header()}
+<div class="toc-container toc">
+</div>
 $if(title)$
 <header class="title-block-header">
 <h1 class="title">$title$</h1>
@@ -8,8 +10,6 @@ $if(title)$
 </header>
 $endif$
 $body$
-<div class="toc-container toc">
-</div>
 <div class="tags">
   $for(tags)$<a href="/tag/$it$.html">#$it$</a>$sep$ $endfor$
 </div>
