@@ -96,7 +96,13 @@ def build_rss_feed(posts):
 
 def build_index(outfile, name, posts, options):
     posts.sort(key=lambda x: x['date'], reverse=True)
-    md='---\nlist: ' + json.dumps(posts) + '\n---\n'
+    groups_per_year = defaultdict(list)
+    for post in posts:
+        year = post['date'].split('/')[0]
+        groups_per_year[year].append(post)
+    # necessary because defaultdict cannot be sorted
+    group_keys = sorted(groups_per_year.items(), reverse=True)
+    md='---\nlist: ' + json.dumps(group_keys) + '\n---\n'
     outdir = path.dirname(outfile)
     print(f'Build {name} index -> {outfile}')
     os.makedirs(outdir, exist_ok=True)
